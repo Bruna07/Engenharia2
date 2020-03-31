@@ -11,13 +11,13 @@ public class Aluno {
 
    public Aluno(int matricula1,String nome1,String tefone1,String email1){
        this.matricula=matricula1;
-       this.nome=nome;
+       this.nome=nome1;
        this.email=email1;
        this.telefone=tefone1;
 
     }
     public Aluno(String nome1,String tefone1,String email1){
-        this.nome=nome;
+        this.nome=nome1;
         this.email=email1;
         this.telefone=tefone1;
 

@@ -2,6 +2,7 @@ package com.example.engenharia;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -32,10 +33,11 @@ public class BancoDados extends SQLiteOpenHelper {
         Log.i("Bruna","Criando Tabela.");
         //(tipoS)(integer primary key) usando no primeiro o incremento é automático
         //OBS ESTRUTURA
-       String tabelaAlunos= "create table "+ tabela_Alunos +"(" + coluna_Matricula +" integer primary key, " + coluna_nome+" text, " +coluna_telefone+ " text, "+coluna_email+"text)";
+     //  String tabelaAlunos= "create table "+ tabela_Alunos +"(" + coluna_Matricula +" integer primary key, " +coluna_nome+ " text, " +coluna_telefone+ " text, "+coluna_email+"text)";
        //db.execSQL( "CREATE TABLE " + NOME_TABELA + " (" + ID_USUARIO + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOME + " TEXT NOT NULL, " + EMAIL + " TEXT NOT NULL, " + SENHA + " TEXT NOT NULL );" ); } –
+        db.execSQL( "CREATE TABLE " + tabela_Alunos + " (" + coluna_Matricula + " INTEGER PRIMARY KEY AUTOINCREMENT, " + coluna_nome + " TEXT NOT NULL, " + coluna_telefone + " TEXT NOT NULL, " + coluna_email+ " TEXT NOT NULL );" );
 
-        db.execSQL(tabelaAlunos);/*PARA EXECUTAR*/
+     //   db.execSQL(tabelaAlunos);/*PARA EXECUTAR*/
         Log.i("Bruna","Tabela Criada com sucesso.");
     }
 
@@ -47,11 +49,12 @@ public class BancoDados extends SQLiteOpenHelper {
     /*MÉTODO RESPONSÁVEL POR ADICIONAR UM ALUNO A TABELA*/
     public void addAlunos(Aluno aluno1){
 
-        Log.i("Bruna","Entrou no AddAlunos");
+        Log.i("Bruna","Entrou: AddAlunos();");
 
         SQLiteDatabase db = this.getWritableDatabase(); //Crie e / ou abrir banco de dados que será usado para leitura e gravação.
         ContentValues values= new ContentValues(); /*ARMAZENAR O CONJUNTO DE VALORES*/
         /*CHAVE VALOR*/
+
         values.put(coluna_nome, Aluno.getNome());
         values.put(coluna_telefone, Aluno.getTelefone());
         values.put(coluna_email, Aluno.getEmail());
@@ -62,18 +65,27 @@ public class BancoDados extends SQLiteOpenHelper {
 
     /* MÉTODO RESPONSÁVEL POR EXCLUIR ALUNO DA TABELA*/
  public void deleteAluno(Aluno aluno1){
-Log.i("Bruna","Entrou no deleteAluno");
-     SQLiteDatabase db= this.getWritableDatabase(); /* GRAVAÇÃO NO BANCO*/
+Log.i("Bruna","Entrou: deleteAluno();");
+    SQLiteDatabase db= this.getWritableDatabase(); /* GRAVAÇÃO NO BANCO*/
    db.delete(tabela_Alunos, coluna_Matricula + " =? ", new String[]{String.valueOf(Aluno.getMatricula())}); /*OBS: POSSIVEL PROBLEMA*/
      /* "COLUNA_MATRICULA" A BASE DE REFERÊNCIA PARA APAGAR*/
-/* "?" ->  PARAMÊTRO VEM DE OUTRO LUGAR E É ENCAIXADO*/
+     /* "?" ->  PARAMÊTRO VEM DE OUTRO LUGAR E É ENCAIXADO*/
     db.close();
  }
 
  /*METODO PAR LEITURA SELECIONAR ALUNO DO BANCO */
-    public void selecionarAluno(Aluno aluno1){
-        SQLiteDatabase db= this.getReadableDatabase();/*LEITURA DO BANCO*/
 
+    public Aluno selecionarAluno(Aluno aluno1) {
+        Log.i("Bruna","Entrou: SelecionarAluno();");
+       SQLiteDatabase db = this.getReadableDatabase();/*LEITURA DO BANCO*/
+       Cursor c = db.query(tabela_Alunos, new String[]{coluna_Matricula, coluna_nome, coluna_telefone, coluna_email}, coluna_Matricula + "=?",
+                new String[]{String.valueOf(Aluno.getMatricula())},null,null,null);
+        if(c!= null){
+            c.moveToFirst();/*Move para primeira posição*/
+       }
+        Aluno aluno= new Aluno(Integer.parseInt(c.getString(0)),c.getString(1),c.getString(2),c.getString(3));
+        Log.i("Bruna","cliente Selecionado");
+        return aluno ;
 
     }
 }
